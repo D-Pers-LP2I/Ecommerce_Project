@@ -1,15 +1,14 @@
 from flask import Flask, jsonify, request, render_template
 import stripe
 from products import PRODUCTS
-from config import STRIPE_SECRET_KEY
-from config import STRIPE_PUBLIC_KEY
+from config import STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY
 
 app = Flask(__name__)
 
-# Configuration des clés API Stripe (mode test)
+# Configuration Stripe
 stripe.api_key = STRIPE_SECRET_KEY
 
-# Route principale pour afficher l'interface utilisateur
+# Route principale
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -19,6 +18,7 @@ def index():
 def get_products():
     return jsonify(PRODUCTS)
 
+# Route pour récupérer la clé publique Stripe
 @app.route('/stripe-public-key')
 def get_stripe_public_key():
     return jsonify({'publicKey': STRIPE_PUBLIC_KEY})
@@ -32,15 +32,12 @@ def create_checkout_session():
         if not product:
             return jsonify({"error": "Produit non trouvé"}), 404
 
-        # Crée une session de paiement Stripe
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
                 'price_data': {
                     'currency': 'eur',
-                    'product_data': {
-                        'name': product['name'],
-                    },
+                    'product_data': {'name': product['name']},
                     'unit_amount': product['price'],
                 },
                 'quantity': 1,
@@ -53,12 +50,11 @@ def create_checkout_session():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Route pour afficher la page de succès
+# Routes de succès et d'annulation
 @app.route('/success')
 def success():
     return "Paiement réussi ! Merci pour votre achat."
 
-# Route pour afficher la page d'annulation
 @app.route('/cancel')
 def cancel():
     return "Paiement annulé. Vous pouvez réessayer."

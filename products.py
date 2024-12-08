@@ -1,5 +1,5 @@
 # Liste des produits disponibles
-# Chaque produit a un id unique, un nom et un prix (en centimes pour Stripe).
+# Les prix sont exprimés en centimes pour Stripe.
 
 PRODUCTS = [
     {"id": 1, "name": "Produit 1", "price": 2300},  # 23,00 €
