@@ -8,12 +8,12 @@ app = Flask(__name__)
 # Configuration Stripe
 stripe.api_key = STRIPE_SECRET_KEY
 
-# Route principale
+# Route principale pour afficher la page HTML
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Route pour récupérer les produits
+# Route pour récupérer la liste des produits
 @app.route('/products')
 def get_products():
     return jsonify(PRODUCTS)
@@ -50,7 +50,7 @@ def create_checkout_session():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Routes de succès et d'annulation
+# Routes pour afficher le succès ou l'annulation
 @app.route('/success')
 def success():
     return "Paiement réussi ! Merci pour votre achat."

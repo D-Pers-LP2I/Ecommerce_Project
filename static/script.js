@@ -1,64 +1,56 @@
-// Variables globales
-let products = [];
-let stripePublicKey = '';
+// Ce fichier gère les interactions dynamiques du frontend : récupération des produits, affichage et gestion des paiements.
+let products = [], stripePublicKey = '';
 
-// Fonction pour récupérer la clé publique Stripe
-async function fetchStripePublicKey() {
+// Récupère la clé publique Stripe
+const fetchStripePublicKey = async () => {
     try {
-        const response = await fetch('/stripe-public-key');
-        if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
-        const data = await response.json();
-        stripePublicKey = data.publicKey;
-    } catch (error) {
-        console.error('Erreur lors de la récupération de la clé publique Stripe :', error);
+        const res = await fetch('/stripe-public-key');
+        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        stripePublicKey = (await res.json()).publicKey;
+    } catch (err) {
+        console.error('Erreur clé publique Stripe :', err);
     }
-}
+};
 
-// Fonction pour récupérer les produits
-async function fetchProducts() {
+// Récupère les produits
+const fetchProducts = async () => {
     try {
-        const response = await fetch('/products');
-        if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
-        products = await response.json();
+        const res = await fetch('/products');
+        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        products = await res.json();
         displayProducts(products);
-    } catch (error) {
-        console.error('Erreur lors de la récupération des produits :', error);
+    } catch (err) {
+        console.error('Erreur produits :', err);
         document.getElementById('product-list').textContent = 'Impossible de charger les produits.';
     }
-}
+};
 
-// Fonction pour afficher les produits dans la page
-function displayProducts(products) {
+// Affiche les produits
+const displayProducts = products => {
     const productList = document.getElementById('product-list');
-    productList.innerHTML = '';
-    products.forEach(product => {
-        const productDiv = document.createElement('div');
-        productDiv.className = 'product';
-        productDiv.innerHTML = `
-            <h2>${product.name}</h2>
-            <p>${(product.price / 100).toFixed(2)} €</p>
-            <button onclick="buyProduct(${product.id})">Acheter</button>
-        `;
-        productList.appendChild(productDiv);
-    });
-}
+    productList.innerHTML = products.map(p => `
+        <div class="product">
+            <h2>${p.name}</h2>
+            <p>${(p.price / 100).toFixed(2)} €</p>
+            <button onclick="buyProduct(${p.id})">Acheter</button>
+        </div>`).join('');
+};
 
-// Fonction pour gérer l'achat d'un produit
-async function buyProduct(productId) {
+// Achète un produit
+const buyProduct = async productId => {
     try {
-        const response = await fetch('/create-checkout-session', {
+        const res = await fetch('/create-checkout-session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ product_id: productId }),
+            body: JSON.stringify({ product_id: productId })
         });
-        if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
-        const session = await response.json();
-        const stripe = Stripe(stripePublicKey);
-        stripe.redirectToCheckout({ sessionId: session.id });
-    } catch (error) {
-        console.error('Erreur lors de l\'achat du produit :', error);
+        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        const session = await res.json();
+        Stripe(stripePublicKey).redirectToCheckout({ sessionId: session.id });
+    } catch (err) {
+        console.error('Erreur achat produit :', err);
     }
-}
+};
 
 // Chargement initial
 document.addEventListener('DOMContentLoaded', async () => {
