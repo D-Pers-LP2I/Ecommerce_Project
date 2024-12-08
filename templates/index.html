@@ -4,18 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catalogue de produits</title>
-    <!-- Lien vers la feuille de style -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     <h1>Catalogue de produits</h1>
     <div id="product-list">
-        <!-- Les produits seront dynamiquement ajoutés ici -->
+        <!-- Les produits seront insérés dynamiquement ici -->
     </div>
+    <script>
+        // Charger la liste des produits dynamiquement depuis l'API
+        fetch('/products')
+            .then(response => response.json())
+            .then(products => {
+                const productList = document.getElementById('product-list');
+                products.forEach(product => {
+                    // Créer dynamiquement le HTML pour chaque produit
+                    const productDiv = document.createElement('div');
+                    productDiv.className = 'product';
 
-    <!-- Bibliothèque Stripe -->
-    <script src="https://js.stripe.com/v3/"></script>
-    <!-- Lien vers le script JavaScript -->
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+                    const nameLabel = document.createElement('label');
+                    nameLabel.setAttribute('for', `product-name-${product.id}`);
+                    nameLabel.textContent = `Nom du produit`;
+
+                    const name = document.createElement('h2');
+                    name.id = `product-name-${product.id}`;
+                    name.textContent = product.name;
+
+                    const priceLabel = document.createElement('label');
+                    priceLabel.setAttribute('for', `product-price-${product.id}`);
+                    priceLabel.textContent = `Prix`;
+
+                    const price = document.createElement('p');
+                    price.id = `product-price-${product.id}`;
+                    price.textContent = `${product.price.toFixed(2)} €`;
+
+                    const button = document.createElement('button');
+                    button.id = `buy-product-${product.id}`;
+                    button.textContent = 'Acheter';
+                    button.onclick = () => buyProduct(product.id);
+
+                    productDiv.appendChild(nameLabel);
+                    productDiv.appendChild(name);
+                    productDiv.appendChild(priceLabel);
+                    productDiv.appendChild(price);
+                    productDiv.appendChild(button);
+
+                    productList.appendChild(productDiv);
+                });
+            })
+            .catch(error => console.error('Erreur lors du chargement des produits :', error));
+    </script>
+    <script src="/static/script.js"></script>
 </body>
 </html>

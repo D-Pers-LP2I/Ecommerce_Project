@@ -1,19 +1,15 @@
 from flask import Flask, jsonify, request, render_template
 import stripe
+from products import PRODUCTS
+from config import STRIPE_SECRET_KEY
+from config import STRIPE_PUBLIC_KEY
 
-# Configuration de l'application Flask
 app = Flask(__name__)
 
 # Configuration des clés API Stripe (mode test)
-stripe.api_key = "sk_test_votre_cle_secrete"  # Remplacez par votre clé secrète de test
+stripe.api_key = STRIPE_SECRET_KEY
 
-# Données statiques pour les produits (simulées dans le backend)
-PRODUCTS = [
-    {"id": 1, "name": "Produit 1", "price": 2300},  # Prix en centimes
-    {"id": 2, "name": "Produit 2", "price": 4800}   # Prix en centimes
-]
-
-# Route pour le frontend (page principale)
+# Route principale pour afficher l'interface utilisateur
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -23,48 +19,49 @@ def index():
 def get_products():
     return jsonify(PRODUCTS)
 
-# Route pour créer une session de paiement Stripe
+@app.route('/stripe-public-key')
+def get_stripe_public_key():
+    return jsonify({'publicKey': STRIPE_PUBLIC_KEY})
+
+# Route pour créer une session de paiement
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
-    data = request.get_json()
-    product = next((p for p in PRODUCTS if p['name'] == data['name']), None)
-
-    if not product:
-        return jsonify({'error': 'Produit non trouvé'}), 404
-
     try:
-        checkout_session = stripe.checkout.Session.create(
+        data = request.get_json()
+        product = next((p for p in PRODUCTS if p['id'] == data['product_id']), None)
+        if not product:
+            return jsonify({"error": "Produit non trouvé"}), 404
+
+        # Crée une session de paiement Stripe
+        session = stripe.checkout.Session.create(
             payment_method_types=['card'],
-            line_items=[
-                {
-                    'price_data': {
-                        'currency': 'eur',
-                        'product_data': {
-                            'name': product['name'],
-                        },
-                        'unit_amount': product['price'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'eur',
+                    'product_data': {
+                        'name': product['name'],
                     },
-                    'quantity': 1,
+                    'unit_amount': product['price'],
                 },
-            ],
+                'quantity': 1,
+            }],
             mode='payment',
             success_url='http://127.0.0.1:5000/success',
             cancel_url='http://127.0.0.1:5000/cancel',
         )
-        return jsonify({'id': checkout_session.id})
+        return jsonify({'id': session.id})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
-# Routes pour les pages de succès et d'annulation
+# Route pour afficher la page de succès
 @app.route('/success')
 def success():
-    return "<h1>Paiement réussi ! Merci pour votre achat.</h1>"
+    return "Paiement réussi ! Merci pour votre achat."
 
+# Route pour afficher la page d'annulation
 @app.route('/cancel')
 def cancel():
-    return "<h1>Paiement annulé. Vous pouvez réessayer.</h1>"
+    return "Paiement annulé. Vous pouvez réessayer."
 
-# Point d'entrée principal
 if __name__ == '__main__':
-    print("Démarrage du serveur Flask...")
     app.run(debug=True)

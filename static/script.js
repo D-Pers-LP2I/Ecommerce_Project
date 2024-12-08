@@ -1,5 +1,24 @@
 // Liste des produits récupérée depuis l'API backend
 let products = [];
+let stripePublicKey = ''; // Variable pour stocker la clé publique Stripe
+
+// Fonction pour récupérer la clé publique Stripe depuis le backend
+function fetchStripePublicKey() {
+    return fetch('http://127.0.0.1:5000/stripe-public-key') // Route backend pour récupérer la clé publique
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP : ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            stripePublicKey = data.publicKey; // Stocke la clé publique
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération de la clé publique Stripe :', error);
+            alert('Impossible de charger la clé publique Stripe. Veuillez réessayer plus tard.');
+        });
+}
 
 // Fonction pour récupérer les produits depuis le backend
 function fetchProducts() {
@@ -49,15 +68,19 @@ function buyProduct(productId) {
     }
 
     // Appel au backend pour créer une session Stripe
-    fetch('/create-checkout-session', {
+    fetch('http://127.0.0.1:5000/create-checkout-session', { // URL de l'API backend pour Stripe
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            name: product.name,
-            price: product.price,
+            product_id: product.id, // Utilise l'ID du produit au lieu du nom et prix
         }),
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Erreur HTTP : ${response.status}`);
+            }
+            return response.json();
+        })
         .then(session => {
             if (session.error) {
                 console.error('Erreur Stripe :', session.error);
@@ -65,7 +88,7 @@ function buyProduct(productId) {
                 return;
             }
             // Redirige l'utilisateur vers Stripe Checkout
-            const stripe = Stripe('pk_test_votre_cle_publique'); // Remplacez par votre clé publique
+            const stripe = Stripe(stripePublicKey); // Utilise la clé publique récupérée dynamiquement
             stripe.redirectToCheckout({ sessionId: session.id });
         })
         .catch(error => console.error('Erreur lors de la création de la session de paiement :', error));
@@ -74,7 +97,9 @@ function buyProduct(productId) {
 // Rendre buyProduct globalement accessible
 window.buyProduct = buyProduct;
 
-// Charger les produits lors du chargement de la page
+// Charger les produits et la clé publique Stripe lors du chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
-    fetchProducts(); // Appelle la fonction pour récupérer et afficher les produits
+    fetchStripePublicKey().then(() => {
+        fetchProducts(); // Appelle la fonction pour récupérer et afficher les produits
+    });
 });
