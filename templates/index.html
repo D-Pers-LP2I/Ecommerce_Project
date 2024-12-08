@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue de produits</title>
+    <!-- Lien vers la feuille de style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Catalogue de produits</h1>
+    <div id="product-list">
+        <!-- Les produits seront dynamiquement ajoutés ici -->
+    </div>
+
+    <!-- Bibliothèque Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <!-- Lien vers le script JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

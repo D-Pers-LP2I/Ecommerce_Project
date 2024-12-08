@@ -1,0 +1,48 @@
+/* Styles généraux */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Titre principal */
+h1 {
+    text-align: center; /* Centre le texte */
+    color: #333;        /* Couleur du texte */
+    margin-bottom: 20px; /* Espace sous le titre */
+}
+
+/* Conteneur des produits */
+#product-list {
+    display: flex;
+    flex-direction: column; /* Affiche les produits en colonne */
+    align-items: center;    /* Centre les produits horizontalement */
+    gap: 20px;              /* Espace entre les produits */
+}
+
+/* Style des cartes de produits */
+.product {
+    width: 300px;           /* Largeur fixe pour les cartes */
+    text-align: center;     /* Centre le contenu de chaque produit */
+    border: 1px solid #ddd; /* Bordure légère */
+    padding: 15px;          /* Espacement intérieur */
+    border-radius: 5px;     /* Coins arrondis */
+    background-color: white; /* Couleur de fond */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre pour un effet de relief */
+}
+
+/* Bouton Acheter */
+button {
+    background-color: #007bff; /* Couleur bleue */
+    color: white;             /* Texte blanc */
+    border: none;             /* Pas de bordure */
+    padding: 10px;            /* Espacement intérieur */
+    cursor: pointer;          /* Curseur interactif */
+    border-radius: 5px;       /* Coins arrondis */
+    font-size: 16px;          /* Taille de la police */
+}
+
+button:hover {
+    background-color: #0056b3; /* Couleur bleue plus sombre au survol */
+}
