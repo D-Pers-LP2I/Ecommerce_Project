@@ -1,0 +1,15 @@
+@startuml
+actor Utilisateur
+participant "Frontend (HTML/JS)" as Frontend
+participant "Backend (Flask)" as Backend
+participant "Stripe API" as Stripe
+
+Utilisateur -> Frontend: Sélectionne un produit
+Frontend -> Backend: Envoie product_id
+Backend -> Stripe: Crée une session de paiement
+Stripe --> Backend: Retourne session_id
+Backend --> Frontend: Retourne session_id
+Frontend -> Stripe: Redirige vers la page de paiement
+Utilisateur -> Stripe: Effectue le paiement
+Stripe --> Frontend: Redirige vers URL de succès ou annulation
+@enduml
