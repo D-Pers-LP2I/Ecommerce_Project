@@ -3,32 +3,60 @@ body {
     font-family: Arial, sans-serif; /* Police simple et lisible */
     background-color: #f9f9f9; /* Fond léger pour un contraste agréable */
     margin: 0;
-    padding: 20px;
+    padding: 10px; /* Réduction du padding global */
+    text-align: center; /* Centrage global */
 }
 
 /* Titre principal */
 h1 {
-    text-align: center; /* Centré pour une meilleure visibilité */
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* Espacement minimal sous le titre */
+    margin-top: 5px; /* Réduction de l'espace au-dessus du titre */
+    font-size: 1.8em; /* Taille ajustée */
 }
 
 /* Conteneur des produits */
 #product-list {
     display: flex;
-    flex-direction: column; /* Alignement vertical */
-    align-items: center;
-    gap: 20px; /* Espacement entre les éléments */
+    flex-direction: column; /* Alignement vertical des produits */
+    align-items: center; /* Centre horizontalement chaque produit */
+    gap: 8px; /* Espacement minimal entre les produits */
+    margin: 0 auto; /* Centre le conteneur sur la page */
+    max-width: 400px; /* Limite la largeur du conteneur à 400px */
 }
 
 /* Carte de produit */
 .product {
-    width: 300px;
-    text-align: center;
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 5px;
+    width: 100%; /* Les produits occupent toute la largeur du conteneur */
+    max-width: 300px; /* Limite la taille maximale des cartes */
+    text-align: center; /* Centrage du contenu de chaque produit */
+    padding: 8px; /* Réduction de l'espace interne */
+    border: 1px solid #ddd; /* Bordure légère et discrète */
+    border-radius: 5px; /* Coins arrondis pour un look propre */
     background-color: white;
+    margin: 0; /* Supprime les marges autour */
+}
+
+/* Image des produits */
+.product img {
+    width: 80%; /* Limite la largeur des images à 60% du conteneur */
+    height: auto; /* Conserve les proportions */
+    margin-bottom: 5px; /* Espacement minimal sous l'image */
+    border-radius: 3px; /* Coins légèrement arrondis pour les images */
+}
+
+/* Texte des produits */
+.product h2 {
+    font-size: 1em; /* Taille ajustée pour compacter */
+    margin: 3px 0; /* Marges verticales minimales */
+    font-weight: bold; /* Titre en gras */
+    color: #333; /* Couleur du titre */
+}
+
+.product p {
+    font-size: 0.9em; /* Taille ajustée pour le prix */
+    margin: 3px 0; /* Marges verticales minimales */
+    color: #666; /* Couleur douce pour le prix */
 }
 
 /* Bouton Acheter */
@@ -36,12 +64,13 @@ button {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px;
+    padding: 5px 10px; /* Taille réduite pour le bouton */
+    font-size: 0.9em; /* Taille ajustée */
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    border-radius: 5px; /* Coins arrondis */
+    margin-top: 5px; /* Espacement minimal au-dessus du bouton */
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Couleur plus sombre au survol */
 }
